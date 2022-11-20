@@ -133,11 +133,11 @@ class Hotel:
 	@staticmethod
 	def day_exit(revenue,losses,date):
 		stats_rooms_occ={}
-		
+		summ=0
 		#period=date2days(last_date)-date2days(firstdate)
 	
 		roomstats_t={}
-		print("\n Статистика за день:")
+		print("\n Статистика за день:",date)
 		for room in Room.rooms:
 			stats_rooms_occ={"двухместный":0,"одноместный":0,"полулюкс":0,"люкс":0}
 			if date2days(date) in Room.room_free_date_dict[room.room_number]:
@@ -151,10 +151,13 @@ class Hotel:
 				roomstats_t[room.room_type]=1
 		for s in ["одноместный","двухместный","полулюкс","люкс"]:
 			print("".join(("Тип номера : ",s, " из всего ",str(roomstats_t[s])," свободно ",str( stats_rooms_occ[s]))))
-			print("процент загруженности номеров типа:",s,round((roomstats_t[s]-stats_rooms_occ[s])/roomstats_t[s]*100),"%",sep="")
-		print("выручка ",revenue,"рублей")
-		print("потери",losses,"рублей")
-		
+			summ+=stats_rooms_occ[s]
+			print("Процент загруженности номеров типа:",s,round((roomstats_t[s]-stats_rooms_occ[s])/roomstats_t[s]*100),"%",sep="")
+		print("Выручка за день: ",revenue,"рублей")
+		print("Потери за день: ",losses,"рублей")
+		print("Число свободных номеров: ", summ)
+		a=sum(roomstats_t.values())
+		print("Из общего:",a)
 		
 		
 		
