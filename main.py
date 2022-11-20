@@ -31,7 +31,7 @@ class Hotel:
 		arrival_date,day_count,people_count=date2days(arrival_date),int(day_count),int(people_count)
 		cost_dict={}
 				
-		for day,variation_set in Room.var_dict.items():
+		for variation_set in Room.var_dict.values():
 				
 				for variation  in variation_set:
 					room_number,food_var = de_variation(variation) #распаковка строки
@@ -46,9 +46,9 @@ class Hotel:
 					for room in Room.rooms:
 						if room.room_number == room_number:
 							cost_list.append(int(room.room_cost+foodk))
-						try:
+							try:
 								cost_dict[int(room.room_cost+foodk)].add(variation) #ключ - цена, значение - множество вариаций по этой цене
-						except:
+							except KeyError:
 								cost_dict[int(room.room_cost+foodk)]={variation}
 						
 					cost_list=list(set(cost_list))
@@ -58,10 +58,8 @@ class Hotel:
 				#print(sorted_cost)
 				
 						#SORTING COST
-		try:
-			avaibility_set=Room.var_dict[arrival_date]
-		except KeyError:
-			avaibility_set=set()
+		avaibility_set=Room.var_dict[arrival_date]
+		
 		
 		#print(avaibility_set)
 		#все вариации по этой дате
@@ -77,12 +75,12 @@ class Hotel:
 				for variation in cost_dict[var_cost]: 
 						#print(var_cost,cost_dict[var_cost])
 						#каждая вариация в множестве по этой цене
-						if var_cost*people_count > int(money_count):
+						if int(var_cost*people_count) > int(money_count):
 							continue
 						if variation not in avaibility_set:
 							# если свободен все дни
 							continue
-						if variation_people_count(variation)==int(people_count):
+						if int(variation_people_count(variation))==int(people_count):
 							#нашли номер, проверить согласие
 							if randint(0,4)!=0:
 									#клиент согласен			
@@ -94,10 +92,10 @@ class Hotel:
 			for variation in cost_dict[var_cost]: #каждая вариация в множестве по этой цене
 				if int(var_cost*(int(people_count)+1)*0.7) > int(money_count):
 					continue
-				if variation not  in avaibility_set:
+				if variation not in avaibility_set:
 					# если свободен все дни
 					continue
-				if variation_people_count(variation)==int(people_count)+1:
+				if int(variation_people_count(variation))==int(people_count)+1:
 						
 							#нашли номер, проверить согласие
 					if randint(0,4)!=0:
@@ -131,16 +129,16 @@ class Hotel:
 			print('\n---------------------------------------------------------------------------------------------')
 
 	@staticmethod
-	def day_exit(revenue,losses,date):
+	def day_exit(revenue,losses,date1):
 		stats_rooms_occ={}
 		summ=0
 		#period=date2days(last_date)-date2days(firstdate)
 	
 		roomstats_t={}
-		print("\n Статистика за день:",date)
+		print("\n Статистика за день:",date1)
 		for room in Room.rooms:
 			stats_rooms_occ={"двухместный":0,"одноместный":0,"полулюкс":0,"люкс":0}
-			if date2days(date) in Room.room_free_date_dict[room.room_number]:
+			if date2days(date1) in Room.room_free_date_dict[room.room_number]:
 				try:
 					stats_rooms_occ[room.room_type]+=1
 				except KeyError:
@@ -152,7 +150,7 @@ class Hotel:
 		for s in ["одноместный","двухместный","полулюкс","люкс"]:
 			print("".join(("Тип номера : ",s, " из всего ",str(roomstats_t[s])," свободно ",str( stats_rooms_occ[s]))))
 			summ+=stats_rooms_occ[s]
-			print("Процент загруженности номеров типа:",s,round((roomstats_t[s]-stats_rooms_occ[s])/roomstats_t[s]*100),"%",sep="")
+			print("Процент загруженности номеров типа: ",s," ",round((roomstats_t[s]-stats_rooms_occ[s])/roomstats_t[s]*100),"%",sep="")
 		print("Выручка за день: ",revenue,"рублей")
 		print("Потери за день: ",losses,"рублей")
 		print("Число свободных номеров: ", summ)
@@ -252,7 +250,7 @@ bookingf.close()
 bookingf=open("booking.txt","r")
 for line in bookingf.readlines():
 	date_req,n1,n2,n3,people_count,arrival_date, day_count, money_count=line.split()
-	
+	day_count=int(day_count)
 	try:
 		if req_date!=date_req:
 			#подвести статистику
@@ -272,14 +270,14 @@ for line in bookingf.readlines():
 	
 	if "клиент" in str(variation):
 		#клиент отказался от брони
-		day_losses+=revenue
+		day_losses+=revenue*day_count
 		pass
 	elif "нет" in str(variation):
 		#no rooms
-		day_losses+=revenue
+		day_losses+=revenue*day_count
 		pass
 	else:
-			day_revenue+=revenue
+			day_revenue+=revenue*day_count
 			
 			room_num,food_type=de_variation(variation)
 			for day in range(int(day_count)):
