@@ -2,11 +2,9 @@
 Case Hotel 
 ======================
 Developers:
-Pichuev D. 85%
-Dyakovich A.
-Trushkin N.
-
-
+Pichuev D.  - 85%
+Dyakovich A. - 35%
+Trushkin N. - 20%
 """
 from datetime import date,timedelta
 from random import randint
