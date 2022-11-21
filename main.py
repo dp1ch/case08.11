@@ -136,8 +136,9 @@ class Hotel:
 	
 		roomstats_t={}
 		print("\n Статистика за день:",date1)
+		stats_rooms_occ={"двухместный":0,"одноместный":0,"полулюкс":0,"люкс":0}
 		for room in Room.rooms:
-			stats_rooms_occ={"двухместный":0,"одноместный":0,"полулюкс":0,"люкс":0}
+			
 			if date2days(date1) in Room.room_free_date_dict[room.room_number]:
 				try:
 					stats_rooms_occ[room.room_type]+=1
